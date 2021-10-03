@@ -7,7 +7,7 @@ if len(girls) == len(boys):
     girl_sorted = sorted(girls)
     pairs = zip(boys_sorted, girl_sorted)
     print('Идеальные пары:')
-    for pair in pairs:
-        print(f'{pair[0]} и {pair[1]}')
+    for boy, girl in pairs:
+        print(f'{boy} и {girl}')
 else:
     print('Кто-то может остаться без пары!')
