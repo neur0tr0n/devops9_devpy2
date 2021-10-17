@@ -81,6 +81,17 @@ class VKUser:
         resp = requests.get(url, params=self._params2)
         return resp
 
+    def get_user_phone(self, userid: int = None):
+        url = 'https://api.vk.com/method/account.getProfileInfo'
+        self._params2 = {
+            'user_id': self._user_id,
+            'access_token': self._token,
+            'v': '5.131'
+        }
+        resp = requests.get(url, params=self._params2)
+        return resp
+
+
 app_id = 7977638
 # user_id = 681170666
 # user_ids = [20386970, 140591265]
@@ -96,8 +107,8 @@ users_list: list = []
 for friend in mutual_friends:
     users_list.append(VKUser(appid=app_id, userid=friend))
 
-for user in users_list:
-    print(user.get_users_info())
+for usr in users_list:
+    print(usr.get_users_info(), usr)
     time.sleep(0.4)
 
 
