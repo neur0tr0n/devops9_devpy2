@@ -86,6 +86,6 @@ for friend in mutual_friends_list:
 
 for user in users_list:
     print(user.get_users_info().text)
-    time.sleep(1)
+    time.sleep(0.4)
 
 
