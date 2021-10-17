@@ -43,20 +43,35 @@ class VKUser:
             'access_token': self._token,
             'v': '5.131'
         }
-        resp = requests.get(url, params=self._params2)
-        return resp
+        resp = requests.get(url, params=self._params2).json()
+        return resp['response']
 
     def get_users_info(self, userid: int = None):
+        fio: str
         url = 'https://api.vk.com/method/users.get'
         self._params2 = {
             'user_id': self._user_id,
             'access_token': self._token,
             'v': '5.131'
         }
-        resp = requests.get(url, params=self._params2)
-        return resp
+        resp = requests.get(url, params=self._params2).json()
+        list_params = resp['response']
+        for param in list_params:
+            fio = f'{param["last_name"]} {param["first_name"]}'
+        return fio
 
     def get_friends(self, userid: int = None):
+        url = 'https://api.vk.com/method/friends.get'
+        self._params2 = {
+            'user_id': self._user_id,
+            'access_token': self._token,
+            'v': '5.131'
+        }
+        resp = requests.get(url, params=self._params2).json()
+        friends_list = resp['response']['items']
+        return friends_list
+
+    def get_profile_url(self, userid: int = None):
         url = 'https://api.vk.com/method/friends.get'
         self._params2 = {
             'user_id': self._user_id,
@@ -66,7 +81,6 @@ class VKUser:
         resp = requests.get(url, params=self._params2)
         return resp
 
-
 app_id = 7977638
 # user_id = 681170666
 # user_ids = [20386970, 140591265]
@@ -74,18 +88,16 @@ user_id = 140591265
 user_friend_id = 20386970
 user = VKUser(appid=app_id, userid=user_id)
 user_friend = VKUser(appid=app_id, userid=user_friend_id)
-print(user.get_users_info().text)
-print(user.get_friends().text)
-print(user_friend.get_users_info().text)
-print(user_friend.get_friends().text)
-mutual_friends = user.get_mutual_friends(user_friend_id).json()
-mutual_friends_list = mutual_friends['response']
+print(user.get_users_info())
+print(user_friend.get_users_info())
+mutual_friends = user.get_mutual_friends(user_friend_id)
+print('Mutual friends:')
 users_list: list = []
-for friend in mutual_friends_list:
+for friend in mutual_friends:
     users_list.append(VKUser(appid=app_id, userid=friend))
 
 for user in users_list:
-    print(user.get_users_info().text)
+    print(user.get_users_info())
     time.sleep(0.4)
 
 
