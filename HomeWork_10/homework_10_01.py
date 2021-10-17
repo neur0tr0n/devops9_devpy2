@@ -1,12 +1,12 @@
 import json
 import time
-
 import requests
 
 
 class VKUser:
     _friends: list
     _token: str
+    _token1: str
     _user_id: list
     _app_id: int
     _params1: dict
@@ -21,13 +21,14 @@ class VKUser:
         with open(file, 'r') as f:
             data = json.load(f)
         self._token = data['access_token']
+        self._token1 = data['access_token1']
 
     def authorize(self):
         self._params1 = {
             'client_id': self._app_id,
             'redirect_uri': None,
             'display': 'page',
-            'scope': ['friends'],
+            'scope': ['friends', 'pages'],
             'response_type': 'token',
             'v': '5.131'
         }
@@ -68,8 +69,7 @@ class VKUser:
             'v': '5.131'
         }
         resp = requests.get(url, params=self._params2).json()
-        friends_list = resp['response']['items']
-        return friends_list
+        return resp['response']['items']
 
     def get_profile_url(self, userid: int = None):
         url = 'https://api.vk.com/method/friends.get'
@@ -85,7 +85,7 @@ class VKUser:
         url = 'https://api.vk.com/method/account.getProfileInfo'
         self._params2 = {
             'user_id': self._user_id,
-            'access_token': self._token,
+            'access_token': self._token1,
             'v': '5.131'
         }
         resp = requests.get(url, params=self._params2)
@@ -94,7 +94,10 @@ class VKUser:
 
 app_id = 7977638
 # user_id = 681170666
-# user_ids = [20386970, 140591265]
+# # user_ids = [20386970, 140591265]
+# user1 = VKUser(appid=app_id, userid=user_id)
+# print(user1.authorize())
+
 user_id = 140591265
 user_friend_id = 20386970
 user = VKUser(appid=app_id, userid=user_id)
@@ -108,7 +111,7 @@ for friend in mutual_friends:
     users_list.append(VKUser(appid=app_id, userid=friend))
 
 for usr in users_list:
-    print(usr.get_users_info(), usr)
+    print(usr.get_users_info())
     time.sleep(0.4)
 
 
