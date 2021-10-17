@@ -21,7 +21,7 @@ class YaFileUploader:
     def load_token(self):
         with open(self._token_file, 'r') as f:
             data_ = json.load(f)
-        self._token = data_['token']
+        self._token = data_['token.json']
 
     def upload_file(self, file_path: str = None):
         url = 'https://cloud-api.yandex.net/v1/disk/resources/upload'
