@@ -52,6 +52,7 @@ class VKUser:
         url = 'https://api.vk.com/method/users.get'
         self._params2 = {
             'user_id': self._user_id,
+            'fields': 'site',
             'access_token': self._token,
             'v': '5.131'
         }
