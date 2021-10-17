@@ -6,29 +6,29 @@ import requests
 class VKUser:
     _friends: list
     _token: str
-    _token1: str
-    _user_id: list
+    _user_id: int
     _app_id: int
     _params1: dict
     _params2: dict
+    _page_url: str
 
     def __init__(self, appid: int = None, userid: int = None):
         self._app_id = appid
         self._user_id = userid
         self.get_token('token.json')
+        self._page_url = 'https://vk.com/id' + str(userid)
 
     def get_token(self, file):
         with open(file, 'r') as f:
             data = json.load(f)
         self._token = data['access_token']
-        self._token1 = data['access_token1']
 
     def authorize(self):
         self._params1 = {
             'client_id': self._app_id,
             'redirect_uri': None,
             'display': 'page',
-            'scope': ['friends', 'pages'],
+            'scope': ['friends'],
             'response_type': 'token',
             'v': '5.131'
         }
@@ -36,7 +36,7 @@ class VKUser:
         resp = requests.get(url, params=self._params1)
         return resp.url
 
-    def get_mutual_friends(self, friend: int):
+    def get_mutual_friends(self, friend: int = None):
         url = 'https://api.vk.com/method/friends.getMutual'
         self._params2 = {
             'source_uid': self._user_id,
@@ -48,7 +48,7 @@ class VKUser:
         return resp['response']
 
     def get_users_info(self, userid: int = None):
-        fio: str
+        fio = ''
         url = 'https://api.vk.com/method/users.get'
         self._params2 = {
             'user_id': self._user_id,
@@ -72,29 +72,11 @@ class VKUser:
         return resp['response']['items']
 
     def get_profile_url(self, userid: int = None):
-        url = 'https://api.vk.com/method/friends.get'
-        self._params2 = {
-            'user_id': self._user_id,
-            'access_token': self._token,
-            'v': '5.131'
-        }
-        resp = requests.get(url, params=self._params2)
-        return resp
-
-    def get_user_phone(self, userid: int = None):
-        url = 'https://api.vk.com/method/account.getProfileInfo'
-        self._params2 = {
-            'user_id': self._user_id,
-            'access_token': self._token1,
-            'v': '5.131'
-        }
-        resp = requests.get(url, params=self._params2)
-        return resp
+        return self._page_url
 
 
 app_id = 7977638
 # user_id = 681170666
-# # user_ids = [20386970, 140591265]
 # user1 = VKUser(appid=app_id, userid=user_id)
 # print(user1.authorize())
 
@@ -107,11 +89,11 @@ print(user_friend.get_users_info())
 mutual_friends = user.get_mutual_friends(user_friend_id)
 print('Mutual friends:')
 users_list: list = []
-for friend in mutual_friends:
-    users_list.append(VKUser(appid=app_id, userid=friend))
+for friend_ in mutual_friends:
+    users_list.append(VKUser(appid=app_id, userid=friend_))
 
 for usr in users_list:
-    print(usr.get_users_info())
+    print(f'{usr.get_users_info()} ({usr.get_profile_url()})')
     time.sleep(0.4)
 
 
