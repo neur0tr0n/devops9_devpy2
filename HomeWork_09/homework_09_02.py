@@ -2,6 +2,7 @@ import requests
 import json
 import os
 
+
 class YaFileUploader:
     _token: str
     _token_file: str
